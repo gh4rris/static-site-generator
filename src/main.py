@@ -1,0 +1,1 @@
+lsprint("hello world")
