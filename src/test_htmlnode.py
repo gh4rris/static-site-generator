@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class TestHTMLNode(unittest.TestCase):
 
@@ -30,6 +30,32 @@ class TestLeafNode(unittest.TestCase):
     def test_no_tag(self):
         node = LeafNode(None, "This node has no tag.")
         self.assertEqual("This node has no tag.", node.to_html())
+
+    def test_repr(self):
+        node = LeafNode("a", "Click me!", {"href": "https://www.google.com", "target": "_blank"})
+        self.assertEqual("LeafNode(a, Click me!, {'href': 'https://www.google.com', 'target': '_blank'})", repr(node))
+
+
+class TestParentNode(unittest.TestCase):
+
+    def test_to_html(self):
+        node = ParentNode("p", [LeafNode("b", "Bold text"),
+                        LeafNode(None, "Normal text"),
+                        LeafNode("i", "italic text"),
+                        LeafNode(None, "Normal text")])
+        self.assertEqual("<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>", node.to_html())
+
+    def test_nesting_parents(self):
+        node = ParentNode("p", [LeafNode("b", "Bold text"), 
+                                ParentNode("p", [LeafNode("i", "italic text")])])
+        self.assertEqual("<p><b>Bold text</b><p><i>italic text</i></p></p>", node.to_html())
+
+    def test_repr(self):
+        node = ParentNode("p", [LeafNode("b", "Bold text"),
+                        LeafNode(None, "Normal text"),
+                        LeafNode("i", "italic text"),
+                        LeafNode(None, "Normal text")])
+        self.assertEqual("ParentNode(p, [LeafNode(b, Bold text, None), LeafNode(None, Normal text, None), LeafNode(i, italic text, None), LeafNode(None, Normal text, None)], None)", repr(node))
 
 
 if __name__ == "__main__":
