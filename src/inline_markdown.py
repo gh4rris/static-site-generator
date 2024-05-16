@@ -36,8 +36,10 @@ def split_nodes_image(old_nodes):
     for node in old_nodes:
         if node.text_type != text_type_text:
             new_nodes.append(node)
+            continue
         if extract_markdown_images(node.text) == []:
             new_nodes.append(node)
+            continue
         image_tuples = extract_markdown_images(node.text)
         original_text = node.text
         for tuple in image_tuples:
@@ -57,8 +59,10 @@ def split_nodes_link(old_nodes):
     for node in old_nodes:
         if node.text_type != text_type_text:
             new_nodes.append(node)
+            continue
         if extract_markdown_links(node.text) == []:
             new_nodes.append(node)
+            continue
         link_tuples = extract_markdown_links(node.text)
         original_text = node.text
         for tuple in link_tuples:
@@ -73,4 +77,11 @@ def split_nodes_link(old_nodes):
             new_nodes.append(TextNode(original_text, text_type_text))
     return new_nodes
 
-
+def text_to_textnodes(text):
+    node = TextNode(text, text_type_text)
+    bold = split_nodes_delimiter([node], "**", text_type_bold)
+    italic = split_nodes_delimiter(bold, "*", text_type_italic)
+    code = split_nodes_delimiter(italic, "`", text_type_code)
+    image = split_nodes_image(code)
+    link = split_nodes_link(image)
+    return link
